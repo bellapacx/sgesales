@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "ProductEntry" ADD COLUMN     "totalSales" DOUBLE PRECISION NOT NULL DEFAULT 0;
