@@ -59,7 +59,7 @@ export default function SalesFormPage() {
 
         const prodRes = await fetch("/api/products");
         const productsData: Product[] = await prodRes.json();
-
+        console.log(productsData);
         const productEntries = productsData.map((p) => ({
           productCode: p.productCode,
           productName: p.productName,
@@ -173,7 +173,7 @@ export default function SalesFormPage() {
                 <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
                   <tr>
                     <th className="border p-1 sm:p-2 text-center dark:border-gray-600">
-                      #
+                      Code
                     </th>
                     <th className="border p-1 sm:p-2 text-left dark:border-gray-600">
                       Product
@@ -203,7 +203,7 @@ export default function SalesFormPage() {
                       className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                       <td className="border p-1 sm:p-2 text-center font-medium dark:border-gray-600">
-                        {i + 1}
+                        {p.productCode}
                       </td>
                       <td className="border p-1 sm:p-2 text-left dark:border-gray-600">
                         {p.productName}
