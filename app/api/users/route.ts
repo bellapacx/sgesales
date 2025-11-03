@@ -13,7 +13,7 @@ export async function GET() {
       username: true,
       name: true,
       role: true,
-      plateNumber: true, // ✅ fixed
+
       createdAt: true,
     },
     orderBy: { createdAt: "desc" },
@@ -58,10 +58,10 @@ export async function POST(req: Request) {
         username,
         name,
         password: hashed,
-        plateNumber,
+
         role: "SALESPERSON",
       },
-      select: { id: true, username: true, name: true, plateNumber: true },
+      select: { id: true, username: true, name: true },
     });
 
     return NextResponse.json({ success: true, user });
