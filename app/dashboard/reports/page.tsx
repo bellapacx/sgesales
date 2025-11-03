@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Card,
   CardHeader,
@@ -34,7 +34,7 @@ interface Sale {
     id: number;
     plate: string;
     createdAt: string;
-  } | null; // can be null if no plate selected
+  } | null;
   cashReceived: number;
   cashDeposited: number;
   totalSales: number;
@@ -45,6 +45,9 @@ interface Sale {
 export default function ReportPage() {
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSalesPerson, setSelectedSalesPerson] = useState<string>("all");
+  const [dateFrom, setDateFrom] = useState<string>("");
+  const [dateTo, setDateTo] = useState<string>("");
 
   useEffect(() => {
     async function loadReports() {
@@ -67,12 +70,33 @@ export default function ReportPage() {
     loadReports();
   }, []);
 
+  // Filtered sales based on date and salesperson
+  const filteredSales = useMemo(() => {
+    return sales.filter((sale) => {
+      const saleDate = new Date(sale.date);
+
+      const matchesSalesPerson =
+        selectedSalesPerson === "all" ||
+        sale.salesPerson.username === selectedSalesPerson;
+
+      const matchesDateFrom = dateFrom ? saleDate >= new Date(dateFrom) : true;
+      const matchesDateTo = dateTo ? saleDate <= new Date(dateTo) : true;
+
+      return matchesSalesPerson && matchesDateFrom && matchesDateTo;
+    });
+  }, [sales, selectedSalesPerson, dateFrom, dateTo]);
+
   if (loading)
     return (
       <div className="p-10 text-center text-gray-500 dark:text-gray-400 animate-pulse">
         Loading sales reports...
       </div>
     );
+
+  // Unique salespersons for dropdown
+  const salesPersons = Array.from(
+    new Set(sales.map((s) => s.salesPerson.username))
+  );
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
@@ -83,6 +107,65 @@ export default function ReportPage() {
           </CardTitle>
         </CardHeader>
 
+        {/* Filters */}
+        <CardContent className="flex flex-col sm:flex-row gap-4 mb-4">
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              Salesperson
+            </label>
+            <select
+              className="border border-gray-300 dark:border-gray-600 rounded p-1"
+              value={selectedSalesPerson}
+              onChange={(e) => setSelectedSalesPerson(e.target.value)}
+            >
+              <option value="all" className="text-white bg-gray-700">
+                All
+              </option>
+              {salesPersons.map((sp) => (
+                <option key={sp} value={sp} className="text-white bg-gray-700">
+                  {sp}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              Date From
+            </label>
+            <input
+              type="date"
+              className="border border-gray-300 dark:border-gray-600 rounded p-1"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              Date To
+            </label>
+            <input
+              type="date"
+              className="border border-gray-300 dark:border-gray-600 rounded p-1"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+            />
+          </div>
+
+          <Button
+            className="self-end"
+            onClick={() => {
+              setSelectedSalesPerson("all");
+              setDateFrom("");
+              setDateTo("");
+            }}
+          >
+            Clear Filters
+          </Button>
+        </CardContent>
+
+        {/* Sales Table */}
         <CardContent className="overflow-x-auto">
           <table className="w-full border-collapse text-sm">
             <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
@@ -118,7 +201,7 @@ export default function ReportPage() {
             </thead>
 
             <tbody>
-              {sales.map((sale, i) => (
+              {filteredSales.map((sale, i) => (
                 <tr
                   key={sale.id}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
