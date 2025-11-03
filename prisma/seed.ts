@@ -25,7 +25,6 @@ async function main() {
       name: "Sales Person 1",
       password: "sales123",
       role: "SALESPERSON",
-      plateNumber: "ABC-1234", // ✅ Example plate number
     },
   });
 
