@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/permissions";
 import CreateUserForm from "@/app/components/users/CreateUserForm";
 import { prisma } from "@/lib/db";
 import { Toaster } from "../../components/ui/toaster";
-import LogoutButton from "@/app/components/LogoutButton";
+
 import {
   Card,
   CardContent,
@@ -30,7 +30,6 @@ export default async function UsersPage() {
         <h1 className="text-2xl font-bold tracking-tight">
           Admin — Manage Salespersons
         </h1>
-        <LogoutButton />
       </div>
 
       {/* Create Salesperson Section */}

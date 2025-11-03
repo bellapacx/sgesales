@@ -97,9 +97,7 @@ export default async function DashboardHome() {
               <tr>
                 <th className="px-4 py-3 text-left font-medium">Date</th>
                 <th className="px-4 py-3 text-left font-medium">Salesperson</th>
-                <th className="px-4 py-3 text-left font-medium">
-                  Plate Number
-                </th>
+
                 <th className="px-4 py-3 text-right font-medium">
                   Total Sales (ETB)
                 </th>
