@@ -19,7 +19,7 @@ export async function GET(
         username: true,
         name: true,
         role: true,
-        plateNumber: true,
+
         createdAt: true,
       },
     });

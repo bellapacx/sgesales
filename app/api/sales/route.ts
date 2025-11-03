@@ -16,13 +16,28 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2️⃣ Fetch product prices
+    // 2️⃣ Validate plate number
+    let plateNumberId: number | null = null;
+    if (data.plateNumberId) {
+      const plate = await prisma.plateNumber.findUnique({
+        where: { id: Number(data.plateNumberId) },
+      });
+      if (!plate) {
+        return new Response(
+          JSON.stringify({ error: "Plate number not found" }),
+          { status: 404 }
+        );
+      }
+      plateNumberId = plate.id;
+    }
+
+    // 3️⃣ Fetch product prices
     const products = await prisma.product.findMany();
     const priceMap = Object.fromEntries(
       products.map((p) => [p.productCode, p.price])
     );
 
-    // 3️⃣ Prepare product entries (💰 now includes price + totalSales)
+    // 4️⃣ Prepare product entries
     const productEntries = data.products.map((p: any) => {
       const price = priceMap[p.productCode] || 0;
       const totalSales = price * (p.sold || 0);
@@ -33,12 +48,12 @@ export async function POST(req: Request) {
         sold: p.sold,
         productReturned: p.productReturned,
         emptyReturned: p.emptyReturned,
-        price, // ✅ store price
-        totalSales, // ✅ store total for this product
+        price,
+        totalSales,
       };
     });
 
-    // 4️⃣ Calculate overall sale total
+    // 5️⃣ Calculate totals
     const saleTotal = productEntries.reduce(
       (sum: number, p: any) => sum + p.totalSales,
       0
@@ -47,15 +62,16 @@ export async function POST(req: Request) {
     const cashDeposited = Number(data.cashDeposited || 0);
     const difference = cashReceived - cashDeposited;
 
-    // 5️⃣ Save sale with product entries
+    // 6️⃣ Save sale
     const sale = await prisma.sale.create({
       data: {
+        date: new Date(data.date), // ✅ store selected date
         salesPersonId: user.id,
-        plateNumber: data.plateNumber,
+        plateNumberId, // ✅ store relation
         cashReceived,
         cashDeposited,
         difference,
-        totalSales: saleTotal, // ✅ matches schema
+        totalSales: saleTotal,
         products: {
           create: productEntries,
         },
@@ -71,14 +87,16 @@ export async function POST(req: Request) {
     });
   }
 }
+
 export async function GET() {
   const sales = await prisma.sale.findMany({
     include: {
       salesPerson: { select: { name: true, username: true } },
+      plateNumber: true, // ✅ include plate number
       products: true,
     },
     orderBy: { date: "desc" },
   });
 
-  return Response.json(sales);
+  return new Response(JSON.stringify(sales), { status: 200 });
 }

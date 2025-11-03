@@ -8,26 +8,33 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  username    String   @unique
-  name        String
-  password    String
-  role        Role     @default(SALESPERSON)
-  plateNumber String?
-  sales       Sale[]
-  createdAt   DateTime @default(now())
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  name      String
+  password  String
+  role      Role      @default(SALESPERSON)
+  sales     Sale[]
+  createdAt DateTime  @default(now())
+}
+
+model PlateNumber {
+  id        Int      @id @default(autoincrement())
+  plate     String   @unique
+  sales     Sale[]   // relation back to sales
+  createdAt DateTime @default(now())
 }
 
 model Sale {
   id             Int             @id @default(autoincrement())
   date           DateTime        @default(now())
   salesPersonId  Int
+  plateNumberId  Int?
   salesPerson    User            @relation(fields: [salesPersonId], references: [id])
-  plateNumber    String
+  plateNumber    PlateNumber?     @relation(fields: [plateNumberId], references: [id])
   products       ProductEntry[]
   cashReceived   Float
   cashDeposited  Float
-  totalSales     Float            @default(0) // 💰 Sum of all product totalSales
+  totalSales     Float           @default(0)
   difference     Float
   createdAt      DateTime        @default(now())
 }
@@ -36,7 +43,7 @@ model Product {
   id           Int      @id @default(autoincrement())
   productCode  String   @unique
   productName  String
-  price        Float    // 💰 Unit price (ETB)
+  price        Float
   createdAt    DateTime @default(now())
 }
 
@@ -48,8 +55,8 @@ model ProductEntry {
   received         Int
   sold             Int
   productReturned  Int
-  price            Float    @default(0)  // 💰 store unit price for that product at sale time
-  totalSales       Float    @default(0) // 💰 total = sold * product.price
+  price            Float    @default(0)
+  totalSales       Float    @default(0)
   emptyReturned    Int
   sale             Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
 }

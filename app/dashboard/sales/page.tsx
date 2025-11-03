@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
+
 import {
   Card,
   CardContent,
@@ -12,7 +13,7 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { getSession } from "next-auth/react";
-import { Loader2 } from "lucide-react"; // ✅ spinner icon
+import { Loader2 } from "lucide-react";
 
 interface Product {
   productCode: string;
@@ -24,7 +25,11 @@ interface SalesPerson {
   id: number;
   name: string;
   username: string;
-  plateNumber?: string;
+}
+
+interface PlateNumber {
+  id: number;
+  plate: string;
 }
 
 interface ProductEntry {
@@ -39,12 +44,20 @@ interface ProductEntry {
 
 export default function SalesFormPage() {
   const router = useRouter();
-  const [salesPerson, setSalesPerson] = useState<SalesPerson | null>(null);
-  const [products, setProducts] = useState<ProductEntry[]>([]);
-  const [cashReceived, setCashReceived] = useState<number>(0);
-  const [cashDeposited, setCashDeposited] = useState<number>(0);
-  const [loading, setLoading] = useState(false); // ✅ loading state for submission
 
+  const [salesPerson, setSalesPerson] = useState<SalesPerson | null>(null);
+  const [plateNumbers, setPlateNumbers] = useState<PlateNumber[]>([]);
+  const [selectedPlate, setSelectedPlate] = useState<number | null>(null);
+  const [saleDate, setSaleDate] = useState<string>(
+    new Date().toISOString().substring(0, 10)
+  );
+  const [products, setProducts] = useState<ProductEntry[]>([]);
+  const [cashDeposited, setCashDeposited] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+
+  // Recalculate derived fields whenever products or cashDeposited change
+  const grandTotal = products.reduce((sum, p) => sum + p.sold * p.price, 0);
+  const cashReceived = grandTotal; // ✅ auto
   const difference = cashReceived - cashDeposited;
 
   useEffect(() => {
@@ -59,7 +72,6 @@ export default function SalesFormPage() {
 
         const prodRes = await fetch("/api/products");
         const productsData: Product[] = await prodRes.json();
-        console.log(productsData);
         const productEntries = productsData.map((p) => ({
           productCode: p.productCode,
           productName: p.productName,
@@ -70,6 +82,11 @@ export default function SalesFormPage() {
           emptyReturned: 0,
         }));
         setProducts(productEntries);
+
+        const plateRes = await fetch("/api/platenumbers");
+        const plateData: PlateNumber[] = await plateRes.json();
+        setPlateNumbers(plateData);
+        if (plateData.length) setSelectedPlate(plateData[0].id);
       } catch (err) {
         console.error("Error loading data:", err);
       }
@@ -84,23 +101,25 @@ export default function SalesFormPage() {
   ) => {
     const updated = [...products];
     updated[index] = { ...updated[index], [field]: value };
+
+    // Auto-calculated fields
+    updated[index].emptyReturned = updated[index].sold; // 1️⃣
+    updated[index].productReturned =
+      updated[index].received - updated[index].sold; // 2️⃣
+
     setProducts(updated);
   };
-
-  const totalSalesPerProduct = products.map(
-    (p) => (p.sold || 0) * (p.price || 0)
-  );
-  const grandTotal = totalSalesPerProduct.reduce((a, b) => a + b, 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!salesPerson) return alert("User session not found.");
-    setLoading(true); // ✅ start loading
+    if (!selectedPlate) return alert("Please select a plate number.");
+    setLoading(true);
 
     const body = {
-      date: new Date().toISOString(),
+      date: saleDate,
       salesPerson: salesPerson.username,
-      plateNumber: salesPerson.plateNumber,
+      plateNumberId: selectedPlate,
       products,
       cashReceived,
       cashDeposited,
@@ -123,7 +142,7 @@ export default function SalesFormPage() {
     } catch (err) {
       alert("⚠️ Network error submitting sale");
     } finally {
-      setLoading(false); // ✅ stop loading
+      setLoading(false);
     }
   };
 
@@ -146,28 +165,55 @@ export default function SalesFormPage() {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-            {/* Salesperson Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700/60 shadow-inner">
-              <div className="flex flex-col gap-1">
-                <Label className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">
+            {/* Salesperson & Plate & Date */}
+            {/* Salesperson, Plate & Date */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-5 rounded-2xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 shadow-lg">
+              {/* Salesperson */}
+              <div className="flex flex-col gap-2">
+                <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                   Salesperson
                 </Label>
-                <div className="h-10 flex items-center px-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-50 text-sm">
-                  {salesPerson.name || "—"}
+                <div className="h-12 flex items-center px-4 rounded-xl bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-50 font-medium shadow-inner">
+                  {salesPerson.username}
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <Label className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">
+              {/* Plate Number */}
+              <div className="flex flex-col gap-2">
+                <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                   Plate No.
                 </Label>
-                <div className="h-10 flex items-center px-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-50 text-sm">
-                  {salesPerson.plateNumber || "—"}
-                </div>
+                <select
+                  value={selectedPlate || ""}
+                  onChange={(e) => setSelectedPlate(Number(e.target.value))}
+                  className="h-12 w-full rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-50 shadow-inner hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                >
+                  <option value="" disabled>
+                    Select plate
+                  </option>
+                  {plateNumbers.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.plate}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Date */}
+              <div className="flex flex-col gap-2">
+                <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                  Date
+                </Label>
+                <Input
+                  type="date"
+                  value={saleDate}
+                  onChange={(e) => setSaleDate(e.target.value)}
+                  className="h-12 px-4 rounded-xl bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 shadow-inner focus:outline-none focus:ring-2 focus:ring-mint-400 dark:focus:ring-mint-500 transition"
+                />
               </div>
             </div>
 
-            {/* Table */}
+            {/* Products Table */}
             <div className="relative overflow-x-auto border rounded-lg border-gray-200 dark:border-gray-700">
               <table className="w-full text-[11px] sm:text-sm border-collapse">
                 <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
@@ -195,7 +241,6 @@ export default function SalesFormPage() {
                     </th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {products.map((p, i) => (
                     <tr
@@ -208,40 +253,36 @@ export default function SalesFormPage() {
                       <td className="border p-1 sm:p-2 text-left dark:border-gray-600">
                         {p.productName}
                       </td>
-
-                      {[
-                        "received",
-                        "sold",
-                        "productReturned",
-                        "emptyReturned",
-                      ].map((field) => (
-                        <td
-                          key={field}
-                          className="border p-1 sm:p-2 text-center dark:border-gray-600"
-                        >
-                          <Input
-                            type="number"
-                            value={p[field as keyof ProductEntry]}
-                            onChange={(e) =>
-                              handleChange(
-                                i,
-                                field as keyof ProductEntry,
-                                Number(e.target.value)
-                              )
-                            }
-                            className="w-10 sm:w-16 text-[11px] text-center dark:bg-gray-700 dark:text-gray-100"
-                            disabled={loading}
-                          />
-                        </td>
-                      ))}
-
+                      {(["received", "sold"] as (keyof ProductEntry)[]).map(
+                        (field) => (
+                          <td
+                            key={field}
+                            className="border p-1 sm:p-2 text-center dark:border-gray-600"
+                          >
+                            <Input
+                              type="number"
+                              value={p[field]}
+                              onChange={(e) =>
+                                handleChange(i, field, Number(e.target.value))
+                              }
+                              className="w-10 sm:w-16 text-[11px] text-center dark:bg-gray-700 dark:text-gray-100"
+                              disabled={loading}
+                            />
+                          </td>
+                        )
+                      )}
+                      <td className="border p-1 sm:p-2 text-center dark:border-gray-600">
+                        {p.productReturned}
+                      </td>
+                      <td className="border p-1 sm:p-2 text-center dark:border-gray-600">
+                        {p.emptyReturned}
+                      </td>
                       <td className="border p-1 sm:p-2 text-right font-semibold dark:border-gray-600 dark:text-gray-100">
                         {(p.sold * p.price).toFixed(2)}
                       </td>
                     </tr>
                   ))}
                 </tbody>
-
                 <tfoot>
                   <tr className="bg-gray-50 dark:bg-gray-700 font-semibold text-[11px] sm:text-sm">
                     <td
@@ -267,9 +308,8 @@ export default function SalesFormPage() {
                 <Input
                   type="number"
                   value={cashReceived}
-                  onChange={(e) => setCashReceived(Number(e.target.value))}
+                  disabled
                   className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 text-xs sm:text-sm"
-                  disabled={loading}
                 />
               </div>
               <div>
@@ -297,7 +337,6 @@ export default function SalesFormPage() {
               </div>
             </div>
 
-            {/* Submit */}
             <div className="flex justify-end pt-3 sm:pt-4">
               <Button
                 type="submit"

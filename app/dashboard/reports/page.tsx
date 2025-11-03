@@ -30,7 +30,11 @@ interface Sale {
     name: string;
     username: string;
   };
-  plateNumber: string;
+  plateNumber: {
+    id: number;
+    plate: string;
+    createdAt: string;
+  } | null; // can be null if no plate selected
   cashReceived: number;
   cashDeposited: number;
   totalSales: number;
@@ -126,7 +130,7 @@ export default function ReportPage() {
                     {sale.salesPerson.name}
                   </td>
                   <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-gray-800 dark:text-gray-200">
-                    {sale.plateNumber}
+                    {sale.plateNumber?.plate || "N/A"}
                   </td>
                   <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-gray-600 dark:text-gray-300">
                     {new Date(sale.date).toLocaleDateString()}
@@ -164,7 +168,7 @@ export default function ReportPage() {
   );
 }
 
-// ✅ Expandable Product Details with Dark Mode & Animation
+// ✅ Expandable Product Details
 function SaleDetails({ sale }: { sale: Sale }) {
   const [open, setOpen] = useState(false);
 
