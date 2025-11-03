@@ -118,7 +118,7 @@ export default async function DashboardHome() {
                     {sale.date.toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3">{sale.salesPerson.name}</td>
-                  <td className="px-4 py-3">{sale.plateNumber}</td>
+
                   <td className="px-4 py-3 text-right font-medium">
                     {sale.totalSales.toFixed(2)}
                   </td>
