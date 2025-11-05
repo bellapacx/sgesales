@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-// ✅ GET user by username
+// ✅ GET a user by username
 export async function GET(
   req: Request,
   { params }: { params: { username: string } }
@@ -31,14 +31,13 @@ export async function GET(
   }
 }
 
-// ✅ DELETE user by username
+// ✅ DELETE a user by username
 export async function DELETE(
   req: Request,
   context: { params: Promise<{ username: string }> }
 ) {
   try {
-    // ✅ unwrap params (because it's a Promise)
-    const { username } = await context.params;
+    const { username } = await context.params; // ✅ must await this in Next.js 15+
 
     if (!username) {
       return NextResponse.json(
@@ -55,9 +54,7 @@ export async function DELETE(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    await prisma.user.delete({
-      where: { username },
-    });
+    await prisma.user.delete({ where: { username } });
 
     return NextResponse.json({
       message: `✅ User '${username}' deleted successfully.`,
