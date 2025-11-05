@@ -99,18 +99,12 @@ export default function ReportPage() {
   );
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
-      <Card className="shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-            Sales Reports Overview
-          </CardTitle>
-        </CardHeader>
-
+    <div className="p-6 space-y-6 bg-gray-90 dark:bg-gray-900 min-h-screen transition-colors">
+      <Card className="shadow-lg bg-gray-900 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
         {/* Filters */}
         <CardContent className="flex flex-col sm:flex-row gap-4 mb-4">
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+            <label className="text-sm font-medium text-white dark:text-gray-200">
               Salesperson
             </label>
             <select
@@ -130,7 +124,7 @@ export default function ReportPage() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+            <label className="text-sm font-medium text-white dark:text-gray-200">
               Date From
             </label>
             <input
@@ -142,7 +136,7 @@ export default function ReportPage() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+            <label className="text-sm font-medium tewhite dark:text-gray-200">
               Date To
             </label>
             <input
@@ -204,27 +198,27 @@ export default function ReportPage() {
               {filteredSales.map((sale, i) => (
                 <tr
                   key={sale.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="dark:hover:bg-gray-700 transition-colors"
                 >
-                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-center text-gray-700 dark:text-gray-300">
+                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-center text-white dark:text-gray-300">
                     {i + 1}
                   </td>
-                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-gray-800 dark:text-gray-200">
+                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-white dark:text-gray-200">
                     {sale.salesPerson.name}
                   </td>
-                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-gray-800 dark:text-gray-200">
+                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-white dark:text-gray-200">
                     {sale.plateNumber?.plate || "N/A"}
                   </td>
-                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-gray-600 dark:text-gray-300">
+                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-white dark:text-gray-300">
                     {new Date(sale.date).toLocaleDateString()}
                   </td>
-                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-right font-medium text-gray-900 dark:text-gray-100">
+                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-right font-medium text-white dark:text-gray-100">
                     {sale.totalSales.toFixed(2)}
                   </td>
-                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-right text-gray-700 dark:text-gray-300">
+                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-right text-white dark:text-gray-300">
                     {sale.cashReceived.toFixed(2)}
                   </td>
-                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-right text-gray-700 dark:text-gray-300">
+                  <td className="border-b border-gray-200 dark:border-gray-700 p-3 text-right text-white dark:text-gray-300">
                     {sale.cashDeposited.toFixed(2)}
                   </td>
                   <td

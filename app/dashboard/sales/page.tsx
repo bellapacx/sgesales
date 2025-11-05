@@ -155,38 +155,38 @@ export default function SalesFormPage() {
   }
 
   return (
-    <div className="flex justify-center w-full p-2 sm:p-2 bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <Card className="w-full max-w-5xl shadow-lg rounded-2xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
-        <CardHeader className="text-center pb-2">
-          <CardTitle className="text-base sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+    <div className="flex justify-center w-full p-3 sm:p-4 transition-colors duration-500 bg-slate-700 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 min-h-screen">
+      <Card className="w-full max-w-5xl shadow-xl rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg transition-all duration-500 hover:shadow-lg hover:shadow-indigo-100/50 dark:hover:shadow-indigo-700/30">
+        {/* Header */}
+        <CardHeader className="text-center pb-3 rounded-t-2xl bg-gradient-to-r from-teal-400 via-indigo-500 to-pink-500 dark:from-teal-600 dark:via-indigo-700 dark:to-pink-700 text-white shadow-sm">
+          <CardTitle className="text-lg sm:text-2xl font-bold tracking-wide drop-shadow-md">
             🧃 Soft Drink Sales Form
           </CardTitle>
         </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-            {/* Salesperson & Plate & Date */}
+        <CardContent className="bg-slate-700 p-6 sm:p-8 transition-all duration-300">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {/* Salesperson, Plate & Date */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-5 rounded-2xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 shadow-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-teal-100 via-emerald-50 to-indigo-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-950 shadow-inner transition-colors">
               {/* Salesperson */}
               <div className="flex flex-col gap-2">
-                <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                <Label className="text-sm font-semibold text-gray-800 dark:text-gray-100">
                   Salesperson
                 </Label>
-                <div className="h-12 flex items-center px-4 rounded-xl bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-50 font-medium shadow-inner">
+                <div className="h-12 flex items-center px-4 rounded-xl bg-slate-700 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-white dark:text-gray-50 font-medium shadow-inner">
                   {salesPerson.username}
                 </div>
               </div>
 
               {/* Plate Number */}
               <div className="flex flex-col gap-2">
-                <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                <Label className="text-sm font-semibold text-gray-800 dark:text-gray-100">
                   Plate No.
                 </Label>
                 <select
                   value={selectedPlate || ""}
                   onChange={(e) => setSelectedPlate(Number(e.target.value))}
-                  className="h-12 w-full rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-50 shadow-inner hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                  className="h-12 w-full rounded-xl border border-gray-300 bg-slate-700 dark:from-gray-800 dark:to-gray-900 px-4 text-sm text-white dark:text-gray-50 shadow-inner focus:ring-2 focus:ring-teal-400 dark:focus:ring-indigo-500 transition-all"
                 >
                   <option value="" disabled>
                     Select plate
@@ -201,97 +201,82 @@ export default function SalesFormPage() {
 
               {/* Date */}
               <div className="flex flex-col gap-2">
-                <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                  Date
-                </Label>
+                <Label className="text-sm font-semibold text-black">Date</Label>
                 <Input
                   type="date"
                   value={saleDate}
                   onChange={(e) => setSaleDate(e.target.value)}
-                  className="h-12 px-4 rounded-xl bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 shadow-inner focus:outline-none focus:ring-2 focus:ring-mint-400 dark:focus:ring-mint-500 transition"
+                  className="h-12 px-4 rounded-xl bg-slate-700 dark:from-gray-800 dark:to-gray-900 border border-gray-300 dark:border-gray-600 shadow-inner focus:outline-none focus:ring-2 focus:ring-teal-400 dark:focus:ring-indigo-500 transition-all"
                 />
               </div>
             </div>
 
             {/* Products Table */}
-            <div className="relative overflow-x-auto border rounded-lg border-gray-200 dark:border-gray-700">
-              <table className="w-full text-[11px] sm:text-sm border-collapse">
-                <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+            <div className="relative overflow-x-auto border rounded-lg border-gray-200 dark:border-gray-700 shadow-md">
+              <table className="w-full text-xs sm:text-sm border-collapse">
+                <thead className="bg-gradient-to-r from-teal-400 via-indigo-400 to-pink-400 dark:from-teal-600 dark:via-indigo-700 dark:to-pink-700 text-white transition-all">
                   <tr>
-                    <th className="border p-1 sm:p-2 text-center dark:border-gray-600">
-                      Code
-                    </th>
-                    <th className="border p-1 sm:p-2 text-left dark:border-gray-600">
-                      Product
-                    </th>
-                    <th className="border p-1 sm:p-2 text-center dark:border-gray-600">
-                      Rec.
-                    </th>
-                    <th className="border p-1 sm:p-2 text-center dark:border-gray-600">
-                      Sold
-                    </th>
-                    <th className="border p-1 sm:p-2 text-center dark:border-gray-600">
-                      P.Ret
-                    </th>
-                    <th className="border p-1 sm:p-2 text-center dark:border-gray-600">
-                      E.Ret
-                    </th>
-                    <th className="border p-1 sm:p-2 text-right dark:border-gray-600">
-                      Total
-                    </th>
+                    {[
+                      "Code",
+                      "Product",
+                      "Rec.",
+                      "Sold",
+                      "P.Ret",
+                      "E.Ret",
+                      "Total",
+                    ].map((h) => (
+                      <th key={h} className="border p-2 text-center">
+                        {h}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {products.map((p, i) => (
                     <tr
                       key={i}
-                      className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className="transition-colors hover:bg-gradient-to-r hover:from-teal-50 hover:to-pink-50 dark:hover:from-gray-800 dark:hover:to-gray-900"
                     >
-                      <td className="border p-1 sm:p-2 text-center font-medium dark:border-gray-600">
+                      <td className="border p-2 text-center font-medium">
                         {p.productCode}
                       </td>
-                      <td className="border p-1 sm:p-2 text-left dark:border-gray-600">
-                        {p.productName}
-                      </td>
+                      <td className="border p-2 text-left">{p.productName}</td>
                       {(["received", "sold"] as (keyof ProductEntry)[]).map(
                         (field) => (
-                          <td
-                            key={field}
-                            className="border p-1 sm:p-2 text-center dark:border-gray-600"
-                          >
+                          <td key={field} className="border p-2 text-center">
                             <Input
                               type="number"
                               value={p[field]}
                               onChange={(e) =>
                                 handleChange(i, field, Number(e.target.value))
                               }
-                              className="w-10 sm:w-16 text-[11px] text-center dark:bg-gray-700 dark:text-gray-100"
+                              className="w-12 sm:w-16 text-center rounded-lg border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-teal-400 dark:focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-100 transition-all"
                               disabled={loading}
                             />
                           </td>
                         )
                       )}
-                      <td className="border p-1 sm:p-2 text-center dark:border-gray-600">
+                      <td className="border p-2 text-center">
                         {p.productReturned}
                       </td>
-                      <td className="border p-1 sm:p-2 text-center dark:border-gray-600">
+                      <td className="border p-2 text-center">
                         {p.emptyReturned}
                       </td>
-                      <td className="border p-1 sm:p-2 text-right font-semibold dark:border-gray-600 dark:text-gray-100">
+                      <td className="border p-2 text-right font-semibold text-teal-700 dark:text-teal-300">
                         {(p.sold * p.price).toFixed(2)}
                       </td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-gray-50 dark:bg-gray-700 font-semibold text-[11px] sm:text-sm">
+                  <tr className="bg-gradient-to-r from-indigo-100 to-pink-100 dark:from-gray-800 dark:to-gray-900 font-semibold">
                     <td
                       colSpan={6}
-                      className="border p-1 sm:p-2 text-right dark:border-gray-600 dark:text-gray-200"
+                      className="border p-2 text-right text-gray-800 dark:text-gray-200"
                     >
                       Total Sales (ETB)
                     </td>
-                    <td className="border p-1 sm:p-2 text-right dark:border-gray-600 dark:text-gray-100">
+                    <td className="border p-2 text-right text-teal-700 dark:text-teal-300">
                       {grandTotal.toFixed(2)}
                     </td>
                   </tr>
@@ -300,47 +285,40 @@ export default function SalesFormPage() {
             </div>
 
             {/* Cash Summary */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-gray-200 dark:border-gray-700 pt-3 sm:pt-4">
-              <div>
-                <Label className="text-xs sm:text-sm dark:text-gray-200">
-                  Cash Received
-                </Label>
-                <Input
-                  type="number"
-                  value={cashReceived}
-                  disabled
-                  className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 text-xs sm:text-sm"
-                />
-              </div>
-              <div>
-                <Label className="text-xs sm:text-sm dark:text-gray-200">
-                  Cash Deposited
-                </Label>
-                <Input
-                  type="number"
-                  value={cashDeposited}
-                  onChange={(e) => setCashDeposited(Number(e.target.value))}
-                  className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 text-xs sm:text-sm"
-                  disabled={loading}
-                />
-              </div>
-              <div>
-                <Label className="text-xs sm:text-sm dark:text-gray-200">
-                  Difference
-                </Label>
-                <Input
-                  type="number"
-                  value={difference}
-                  disabled
-                  className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 text-xs sm:text-sm"
-                />
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+              {[
+                { label: "Cash Received", value: cashReceived, setter: null },
+                {
+                  label: "Cash Deposited",
+                  value: cashDeposited,
+                  setter: setCashDeposited,
+                },
+                { label: "Difference", value: difference, setter: null },
+              ].map((item, i) => (
+                <div key={i}>
+                  <Label className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                    {item.label}
+                  </Label>
+                  <Input
+                    type="number"
+                    value={item.value}
+                    onChange={
+                      item.setter
+                        ? (e) => item.setter(Number(e.target.value))
+                        : undefined
+                    }
+                    disabled={!item.setter || loading}
+                    className="h-10 px-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gradient-to-r from-white to-teal-50 dark:from-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-50 focus:ring-2 focus:ring-teal-400 dark:focus:ring-indigo-500 transition-all"
+                  />
+                </div>
+              ))}
             </div>
 
-            <div className="flex justify-end pt-3 sm:pt-4">
+            {/* Submit Button */}
+            <div className="flex justify-end pt-5">
               <Button
                 type="submit"
-                className="px-4 py-1.5 sm:px-6 sm:py-2 font-medium text-xs sm:text-sm dark:bg-mint-500 dark:hover:bg-mint-600 flex items-center gap-2"
+                className="px-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-500 via-indigo-500 to-pink-500 dark:from-teal-600 dark:via-indigo-700 dark:to-pink-700 hover:opacity-90 transition-all shadow-lg rounded-xl flex items-center gap-2"
                 disabled={loading}
               >
                 {loading ? (

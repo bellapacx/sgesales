@@ -42,7 +42,7 @@ export default async function DashboardHome() {
   const sum = totals._sum;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-8 space-y-8 transition-colors">
+    <div className="min-h-screen bg-gray-900 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-8 space-y-8 transition-colors">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
