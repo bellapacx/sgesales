@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-// ✅ GET a user by username
-export async function GET(
-  req: Request,
-  { params }: { params: { username: string } }
-) {
+// ✅ Define handler types manually to match new Next.js 15 behavior
+type RouteContext = {
+  params: Promise<{ username: string }>;
+};
+
+// ✅ GET user by username
+export async function GET(req: Request, context: RouteContext) {
   try {
-    const { username } = params;
+    const { username } = await context.params; // ✅ unwrap Promise
 
     const user = await prisma.user.findUnique({
       where: { username },
@@ -31,13 +33,10 @@ export async function GET(
   }
 }
 
-// ✅ DELETE a user by username
-export async function DELETE(
-  req: Request,
-  context: { params: Promise<{ username: string }> }
-) {
+// ✅ DELETE user by username
+export async function DELETE(req: Request, context: RouteContext) {
   try {
-    const { username } = await context.params; // ✅ must await this in Next.js 15+
+    const { username } = await context.params;
 
     if (!username) {
       return NextResponse.json(
@@ -46,9 +45,7 @@ export async function DELETE(
       );
     }
 
-    const existing = await prisma.user.findUnique({
-      where: { username },
-    });
+    const existing = await prisma.user.findUnique({ where: { username } });
 
     if (!existing) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
