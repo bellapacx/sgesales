@@ -103,9 +103,17 @@ export default function SalesFormPage() {
     updated[index] = { ...updated[index], [field]: value };
 
     // Auto-calculated fields
-    updated[index].emptyReturned = updated[index].sold; // 1️⃣
+    updated[index].emptyReturned = updated[index].sold;
     updated[index].productReturned =
-      updated[index].received - updated[index].sold; // 2️⃣
+      updated[index].received - updated[index].sold;
+
+    // ✅ Force last 6 rows' emptyReturned = 0
+    const total = updated.length;
+    for (let i = total - 6; i < total; i++) {
+      if (i >= 0 && i < total) {
+        updated[i].emptyReturned = 0;
+      }
+    }
 
     setProducts(updated);
   };
