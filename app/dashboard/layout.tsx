@@ -27,13 +27,14 @@ export default async function DashboardLayout({
           SoftDrink Admin
         </div>
 
-        <nav className="flex-1 p-4 space-y-1 text-sm text-gray-700">
+        <nav className="flex-1 p-4 space-y-1 text-sm text-black dark:text-white">
           {role === "ADMIN" ? (
             <>
               <SidebarLink href="/dashboard" label="Overview" />
               <SidebarLink href="/dashboard/reports" label="Sales Report" />
               <SidebarLink href="/dashboard/inventory" label="Inventory" />
               <SidebarLink href="/dashboard/users" label="Manage Users" />
+              <SidebarLink href="/dashboard/product" label="Products" />
             </>
           ) : (
             <SidebarLink href="/dashboard/sales" label="Sales Form" />

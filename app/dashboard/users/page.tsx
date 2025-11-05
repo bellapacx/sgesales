@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/permissions";
 import CreateUserForm from "@/app/components/users/CreateUserForm";
 import { prisma } from "@/lib/db";
 import { Toaster } from "../../components/ui/toaster";
+import DeleteUserButton from "../../components/users/DeleteUserButton"; // ✅ add this line
 
 import {
   Card,
@@ -11,10 +12,8 @@ import {
 } from "../../components/ui/card";
 
 export default async function UsersPage() {
-  // ✅ Restrict access to admins only
   await requireRole("ADMIN");
 
-  // ✅ Fetch users (exclude admin for simplicity)
   const users = await prisma.user.findMany({
     where: { role: "SALESPERSON" },
     select: { id: true, username: true, name: true, role: true },
@@ -23,7 +22,6 @@ export default async function UsersPage() {
 
   return (
     <div className="p-8 space-y-8">
-      {/* Global toaster */}
       <Toaster />
 
       <div className="flex justify-between items-center">
@@ -34,9 +32,6 @@ export default async function UsersPage() {
 
       {/* Create Salesperson Section */}
       <Card className="shadow-sm">
-        <CardHeader>
-          <CardTitle>Create Salesperson</CardTitle>
-        </CardHeader>
         <CardContent>
           <CreateUserForm />
         </CardContent>
@@ -60,18 +55,20 @@ export default async function UsersPage() {
                     </th>
                     <th className="py-2 px-4 text-left font-medium">Name</th>
                     <th className="py-2 px-4 text-left font-medium">Role</th>
+                    <th className="py-2 px-4 text-left font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map((u) => (
-                    <tr
-                      key={u.id}
-                      className="border-b hover:bg-gray-50 transition-colors"
-                    >
+                    <tr key={u.id} className="border-b transition-colors">
                       <td className="py-2 px-4">{u.username}</td>
                       <td className="py-2 px-4">{u.name}</td>
                       <td className="py-2 px-4 capitalize text-gray-700">
                         {u.role.toLowerCase()}
+                      </td>
+                      <td className="py-2 px-4">
+                        <DeleteUserButton username={u.username} />{" "}
+                        {/* ✅ new delete button */}
                       </td>
                     </tr>
                   ))}
