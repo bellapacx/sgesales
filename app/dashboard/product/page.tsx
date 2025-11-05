@@ -108,10 +108,7 @@ export default function ProductManagementPage() {
                 </thead>
                 <tbody>
                   {products.map((p, i) => (
-                    <tr
-                      key={p.id ?? i}
-                      className="hover:bg-gradient-to-r hover:from-teal-50 hover:to-pink-50 dark:hover:from-gray-800 dark:hover:to-gray-900 transition"
-                    >
+                    <tr key={p.id ?? i}>
                       <td className="border p-2 text-center text-white">
                         {editingIndex === i ? (
                           <Input
